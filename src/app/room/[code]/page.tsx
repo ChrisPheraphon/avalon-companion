@@ -346,15 +346,17 @@ export default function RoomLobby({ params }: { params: Promise<{ code: string }
 
         <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
           <strong className="mb-2 block text-sm text-white">{t.ability}</strong>
+          {/* 🌟 บังคับแก้ Type ข้อมูลความสามารถตรงนี้ 🌟 */}
           <p className="text-sm leading-6 text-slate-300">
-            {myRoleDetails.ability[lang]}
+            {(myRoleDetails.ability as any)[lang]}
           </p>
         </div>
 
         <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-4">
           <strong className="mb-2 block text-sm text-yellow-300">{t.tip}</strong>
+          {/* 🌟 บังคับแก้ Type ข้อมูลทริคตรงนี้ 🌟 */}
           <p className="text-sm leading-6 text-slate-200">
-            {myRoleDetails.tip[lang]}
+            {(myRoleDetails.tip as any)[lang]}
           </p>
         </div>
       </div>
