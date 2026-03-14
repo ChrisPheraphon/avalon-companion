@@ -10,6 +10,67 @@ const GOOD_ROLES = ["Merlin", "Percival", "Loyal Servant of Arthur"];
 const EVIL_ROLES = ["Assassin", "Morgana", "Mordred", "Oberon", "Minion of Mordred"];
 const ALL_ROLES = [...GOOD_ROLES, ...EVIL_ROLES];
 
+// 🌟 ย้าย SectionCard ออกมาไว้ข้างนอกฟังก์ชันหลัก
+const SectionCard = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div
+    className={`rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-xl backdrop-blur-xl ${className}`}
+  >
+    {children}
+  </div>
+);
+
+// 🌟 ย้าย RoleInfoCard ออกมาไว้ข้างนอก และรับค่าผ่าน Props แทนเพื่อกันจอกระพริบ
+const RoleInfoCard = ({ myRoleDetails, t, lang }: { myRoleDetails: any, t: any, lang: string }) => {
+  if (!myRoleDetails) {
+    return (
+      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-slate-400">
+        ...
+      </div>
+    );
+  }
+
+  const isGood = myRoleDetails.team === "good";
+
+  return (
+    <div
+      className={`rounded-3xl border p-6 shadow-xl ${
+        isGood
+          ? "border-blue-400/20 bg-blue-500/10"
+          : "border-red-400/20 bg-red-500/10"
+      }`}
+    >
+      <p className="mb-2 text-sm font-semibold text-slate-300">{t.yourRoleIs}</p>
+      <h3
+        className={`text-3xl font-extrabold ${
+          isGood ? "text-blue-300" : "text-red-300"
+        }`}
+      >
+        {myRoleDetails.name}
+      </h3>
+
+      <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+        <strong className="mb-2 block text-sm text-white">{t.ability}</strong>
+        <p className="text-sm leading-6 text-slate-300">
+          {(myRoleDetails.ability as any)[lang]}
+        </p>
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-4">
+        <strong className="mb-2 block text-sm text-yellow-300">{t.tip}</strong>
+        <p className="text-sm leading-6 text-slate-200">
+          {(myRoleDetails.tip as any)[lang]}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 export default function RoomLobby({ params }: { params: Promise<{ code: string }> }) {
   const resolvedParams = use(params);
   const roomCode = resolvedParams.code.toUpperCase();
@@ -302,67 +363,6 @@ export default function RoomLobby({ params }: { params: Promise<{ code: string }
       ? "Night Phase"
       : "Day Phase";
 
-  const SectionCard = ({
-    children,
-    className = "",
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) => (
-    <div
-      className={`rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-xl backdrop-blur-xl ${className}`}
-    >
-      {children}
-    </div>
-  );
-
-  const RoleInfoCard = () => {
-    if (!myRoleDetails) {
-      return (
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-slate-400">
-          ...
-        </div>
-      );
-    }
-
-    const isGood = myRoleDetails.team === "good";
-
-    return (
-      <div
-        className={`rounded-3xl border p-6 shadow-xl ${
-          isGood
-            ? "border-blue-400/20 bg-blue-500/10"
-            : "border-red-400/20 bg-red-500/10"
-        }`}
-      >
-        <p className="mb-2 text-sm font-semibold text-slate-300">{t.yourRoleIs}</p>
-        <h3
-          className={`text-3xl font-extrabold ${
-            isGood ? "text-blue-300" : "text-red-300"
-          }`}
-        >
-          {myRoleDetails.name}
-        </h3>
-
-        <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-          <strong className="mb-2 block text-sm text-white">{t.ability}</strong>
-          {/* 🌟 บังคับแก้ Type ข้อมูลความสามารถตรงนี้ 🌟 */}
-          <p className="text-sm leading-6 text-slate-300">
-            {(myRoleDetails.ability as any)[lang]}
-          </p>
-        </div>
-
-        <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-4">
-          <strong className="mb-2 block text-sm text-yellow-300">{t.tip}</strong>
-          {/* 🌟 บังคับแก้ Type ข้อมูลทริคตรงนี้ 🌟 */}
-          <p className="text-sm leading-6 text-slate-200">
-            {(myRoleDetails.tip as any)[lang]}
-          </p>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.15),_transparent_26%),linear-gradient(to_bottom,_#020617,_#0f172a)]" />
@@ -513,7 +513,8 @@ export default function RoomLobby({ params }: { params: Promise<{ code: string }
               </SectionCard>
             ) : (
               <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
-                <RoleInfoCard />
+                {/* 🌟 ส่ง Props เข้าไปใน RoleInfoCard */}
+                <RoleInfoCard myRoleDetails={myRoleDetails} t={t} lang={lang} />
 
                 <SectionCard className="flex flex-col justify-center text-center">
                   <p className="text-xl font-bold text-white">{t.discussTime}</p>
@@ -569,7 +570,8 @@ export default function RoomLobby({ params }: { params: Promise<{ code: string }
               </SectionCard>
             ) : (
               <div className="mx-auto w-full max-w-2xl">
-                <RoleInfoCard />
+                {/* 🌟 ส่ง Props เข้าไปใน RoleInfoCard */}
+                <RoleInfoCard myRoleDetails={myRoleDetails} t={t} lang={lang} />
                 <p className="mt-6 text-center text-sm text-slate-400 animate-pulse">
                   ...
                 </p>
